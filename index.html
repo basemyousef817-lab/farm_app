@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="manifest" href="manifest.json">
+    <title>نظام إدارة استصلاح الأراضي - GIS</title>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <!-- مكتبة Excel -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <!-- مكتبة الرسوم البيانية -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- مكتبة PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <header>
+        <h1><i class="fas fa-seedling"></i> نظام إدارة استصلاح الأراضي</h1>
+        <div class="header-actions">
+            <!-- زر إضافة مزرعة -->
+            <button onclick="enableAddMode()" id="add-mode-btn">
+                <i class="fas fa-plus"></i> إضافة مزرعة
+            </button>
+            
+            <!-- زر عرض الكل -->
+            <button onclick="zoomToFarms()">
+                <i class="fas fa-search-location"></i> عرض الكل
+            </button>
+            
+            <!-- زر حفظ البيانات -->
+            <button onclick="saveFarms()">
+                <i class="fas fa-save"></i> حفظ
+            </button>
+            
+            <!-- زر استرجاع البيانات -->
+            <button onclick="loadFarms(); reloadMarkers();">
+                <i class="fas fa-upload"></i> استرجاع
+            </button>
+            
+            <!-- زر استيراد Excel -->
+            <button onclick="document.getElementById('fileInput').click()">
+                <i class="fas fa-file-upload"></i> استيراد Excel
+            </button>
+            <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" style="display:none" onchange="importExcel(event)" />
+            
+            <!-- أزرار الخرائط -->
+            <button onclick="switchMap('osm')"><i class="fas fa-map"></i> OSM</button>
+            <button onclick="switchMap('google')"><i class="fas fa-map"></i> Google</button>
+            <button onclick="switchMap('satellite')"><i class="fas fa-satellite"></i> فضائي</button>
+            
+            <!-- زر الغطاء النباتي -->
+            <button onclick="toggleNDVI()">
+                <i class="fas fa-leaf"></i> غطاء نباتي
+            </button>
+
+            <!-- زر تحليل القمر الصناعي -->
+            <button onclick="analyzeFarm()" style="background:#1565c0 !important;">
+                <i class="fas fa-satellite-dish"></i> تحليل القمر
+            </button>
+
+            <!-- زر الإنذارات -->
+            <button onclick="showAlerts()" style="background:#e76f51 !important;">
+                <i class="fas fa-bell"></i> الإنذارات
+            </button>
+
+            <!-- زر لوحة التحكم -->
+            <button onclick="showDashboard()">
+                <i class="fas fa-chart-pie"></i> لوحة التحكم
+            </button>
+
+            <!-- زر تقرير PDF -->
+            <button onclick="exportPDF()">
+                <i class="fas fa-file-pdf"></i> PDF
+            </button>
+        </div>
+    </header>
+
+    <div id="map"></div>
+
+    <!-- الرسم البياني -->
+    <div id="chart-container">
+        <h4 style="text-align: center; color: #1a472a; margin-bottom: 10px;">📊 توزيع المحاصيل</h4>
+        <canvas id="cropChart" width="250" height="200"></canvas>
+    </div>
+
+    <div id="info-panel">
+        <h3><i class="fas fa-info-circle"></i> معلومات المزرعة</h3>
+        <div id="farm-details">
+            <p style="color: #999; text-align: center;">اضغط على أي مزرعة في الخريطة</p>
+        </div>
+    </div>
+
+    <div id="stats-bar">
+        <div class="stat-item">
+            <span class="stat-number" id="farm-count">0</span>
+            <span class="stat-label">عدد المزارع</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-number" id="total-area">0</span>
+            <span class="stat-label">المساحة الكلية (فدان)</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-number" id="irrigated-area">0</span>
+            <span class="stat-label">مساحة مروية</span>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

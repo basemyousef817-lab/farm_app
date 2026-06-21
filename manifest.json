@@ -1,0 +1,8 @@
+{
+  "name": "نظام استصلاح الأراضي",
+  "short_name": "الاستصلاح",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#1a472a",
+  "theme_color": "#1a472a"
+} 
