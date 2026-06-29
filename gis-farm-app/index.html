@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="manifest" href="manifest.json">
+    <title>نظام استصلاح الأراضي - GIS</title>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <!-- مكتبة Excel -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <!-- مكتبة الرسوم البيانية -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- مكتبة PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+    <!-- ===== صفحة تسجيل الدخول ===== -->
+    <div id="login-page">
+        <div class="login-container">
+            <div class="login-box">
+                <div class="login-header">
+                    <i class="fas fa-seedling login-icon"></i>
+                    <h1>نظام استصلاح الأراضي</h1>
+                    <p>GIS Farm Management System</p>
+                </div>
+                <div class="login-form">
+                    <div class="input-group">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="username" placeholder="اسم المستخدم" />
+                    </div>
+                    <div class="input-group">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="password" placeholder="كلمة المرور" />
+                    </div>
+                    <button onclick="login()" id="login-btn">
+                        <i class="fas fa-sign-in-alt"></i> تسجيل الدخول
+                    </button>
+                    <p id="login-error" style="color:#e76f51;font-size:13px;margin-top:10px;display:none;text-align:center;">
+                        ❌ اسم المستخدم أو كلمة المرور غير صحيحة
+                    </p>
+                </div>
+                <div class="login-footer">
+                    <p>© 2025 نظام استصلاح الأراضي</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== التطبيق الأساسي ===== -->
+    <div id="app-content" style="display:none;">
+        <header>
+            <h1><i class="fas fa-seedling"></i> نظام إدارة استصلاح الأراضي</h1>
+            <div class="header-actions">
+                <button onclick="enableAddMode()" id="add-mode-btn">
+                    <i class="fas fa-plus"></i> إضافة مزرعة
+                </button>
+                <button onclick="openAddFarmForm()" style="background:#2d6a4f !important;">
+                    <i class="fas fa-pen"></i> إدخال يدوي
+                </button>
+                <button onclick="zoomToFarms()">
+                    <i class="fas fa-search-location"></i> عرض الكل
+                </button>
+                <button onclick="saveFarms()">
+                    <i class="fas fa-save"></i> حفظ
+                </button>
+                <button onclick="loadFarms(); reloadMarkers();">
+                    <i class="fas fa-upload"></i> استرجاع
+                </button>
+                <button onclick="document.getElementById('fileInput').click()">
+                    <i class="fas fa-file-upload"></i> استيراد Excel
+                </button>
+                <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" style="display:none" onchange="importExcel(event)" />
+                <button onclick="switchMap('osm')"><i class="fas fa-map"></i> OSM</button>
+                <button onclick="switchMap('google')"><i class="fas fa-map"></i> Google</button>
+                <button onclick="switchMap('satellite')"><i class="fas fa-satellite"></i> فضائي</button>
+                <button onclick="toggleNDVI()">
+                    <i class="fas fa-leaf"></i> غطاء نباتي
+                </button>
+                <button onclick="analyzeFarm()" style="background:#1565c0 !important;">
+                    <i class="fas fa-satellite-dish"></i> تحليل القمر
+                </button>
+                <button onclick="showAlerts()" style="background:#e76f51 !important;">
+                    <i class="fas fa-bell"></i> الإنذارات
+                </button>
+                <button onclick="showDashboard()">
+                    <i class="fas fa-chart-pie"></i> لوحة التحكم
+                </button>
+                <button onclick="exportPDF()">
+                    <i class="fas fa-file-pdf"></i> PDF
+                </button>
+                <button onclick="showComparison()" style="background:#8e44ad !important;">
+                    <i class="fas fa-chart-bar"></i> مقارنة
+                </button>
+                <button onclick="showCostAnalysis()" style="background:#d35400 !important;">
+                    <i class="fas fa-coins"></i> التكاليف
+                </button>
+                <button onclick="logout()" style="background:#c0392b !important;">
+                    <i class="fas fa-sign-out-alt"></i> خروج
+                </button>
+            </div>
+        </header>
+
+        <div id="map"></div>
+
+        <div id="chart-container">
+            <h4 style="text-align: center; color: #1a472a; margin-bottom: 10px;">📊 توزيع المحاصيل</h4>
+            <canvas id="cropChart" width="250" height="200"></canvas>
+        </div>
+
+        <div id="info-panel">
+            <h3><i class="fas fa-info-circle"></i> معلومات المزرعة</h3>
+            <div id="farm-details">
+                <p style="color: #999; text-align: center;">لا توجد مزارع. اضغط "إدخال يدوي" لإضافة مزرعة جديدة</p>
+            </div>
+        </div>
+
+        <div id="stats-bar">
+            <div class="stat-item">
+                <span class="stat-number" id="farm-count">0</span>
+                <span class="stat-label">عدد المزارع</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number" id="total-area">0</span>
+                <span class="stat-label">المساحة الكلية (فدان)</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number" id="irrigated-area">0</span>
+                <span class="stat-label">مساحة مروية</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== نموذج إضافة مزرعة ===== -->
+    <div id="farm-form-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:9999;align-items:center;justify-content:center;">
+        <div style="background:white;padding:30px;border-radius:16px;max-width:450px;width:90%;max-height:90vh;overflow-y:auto;">
+            <h2 style="color:#1a472a;text-align:center;margin-bottom:20px;">➕ إضافة مزرعة جديدة</h2>
+            <form id="farm-form">
+                <div style="margin-bottom:12px;">
+                    <label style="font-weight:bold;color:#333;">🌿 اسم المزرعة *</label>
+                    <input type="text" id="f-name" required style="width:100%;padding:10px;border:2px solid #ddd;border-radius:8px;margin-top:4px;" />
+                </div>
+                <div style="margin-bottom:12px;">
+                    <label style="font-weight:bold;color:#333;">👤 المالك</label>
+                    <input type="text" id="f-owner" style="width:100%;padding:10px;border:2px solid #ddd;border-radius:8px;margin-top:4px;" />
+                </div>
+                <div style="margin-bottom:12px;">
+                    <label style="font-weight:bold;color:#333;">🌾 المحصول الرئيسي</label>
+                    <input type="text" id="f-crop" style="width:100%;padding:10px;border:2px solid #ddd;border-radius:8px;margin-top:4px;" />
+                </div>
+                <div style="margin-bottom:12px;">
+                    <label style="font-weight:bold;color:#333;">📐 المساحة (فدان) *</label>
+                    <input type="number" id="f-area" required style="width:100%;padding:10px;border:2px solid #ddd;border-radius:8px;margin-top:4px;" />
+                </div>
+                <div style="margin-bottom:12px;">
+                    <label style="font-weight:bold;color:#333;">📍 خط العرض (Latitude) *</label>
+                    <input type="number" step="any" id="f-lat" required style="width:100%;padding:10px;border:2px solid #ddd;border-radius:8px;margin-top:4px;" placeholder="مثال: 30.0444" />
+                </div>
+                <div style="margin-bottom:12px;">
+                    <label style="font-weight:bold;color:#333;">📍 خط الطول (Longitude) *</label>
+                    <input type="number" step="any" id="f-lng" required style="width:100%;padding:10px;border:2px solid #ddd;border-radius:8px;margin-top:4px;" placeholder="مثال: 31.2357" />
+                </div>
+                <div style="margin-bottom:12px;">
+                    <label style="font-weight:bold;color:#333;">💧 المساحة المروية (فدان)</label>
+                    <input type="number" id="f-irrigated" style="width:100%;padding:10px;border:2px solid #ddd;border-radius:8px;margin-top:4px;" />
+                </div>
+                <div style="display:flex;gap:10px;margin-top:15px;">
+                    <button type="button" onclick="saveFarmFromForm()" style="flex:1;padding:12px;background:#2d6a4f;color:white;border:none;border-radius:8px;cursor:pointer;font-size:16px;">✅ حفظ</button>
+                    <button type="button" onclick="closeFarmForm()" style="flex:1;padding:12px;background:#e76f51;color:white;border:none;border-radius:8px;cursor:pointer;font-size:16px;">❌ إلغاء</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,290 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f0f4f8;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* ========================================== */
+/* صفحة تسجيل الدخول */
+/* ========================================== */
+#login-page {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #0a1f12, #1a472a, #2d6a4f);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.login-container {
+    width: 100%;
+    max-width: 420px;
+    padding: 20px;
+}
+
+.login-box {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+    padding: 40px 35px;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+    animation: fadeInUp 0.8s ease;
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.login-header { text-align: center; margin-bottom: 30px; }
+.login-icon { font-size: 48px; color: #2d6a4f; background: #e8f5e9; padding: 15px; border-radius: 50%; margin-bottom: 15px; }
+.login-header h1 { color: #1a472a; font-size: 24px; font-weight: 700; margin-bottom: 5px; }
+.login-header p { color: #888; font-size: 14px; }
+
+.login-form .input-group {
+    display: flex;
+    align-items: center;
+    background: #f5f7fa;
+    border-radius: 12px;
+    padding: 0 15px;
+    margin-bottom: 15px;
+    border: 2px solid transparent;
+    transition: all 0.3s;
+}
+.login-form .input-group:focus-within {
+    border-color: #2d6a4f;
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(45, 106, 79, 0.1);
+}
+.login-form .input-group i { color: #999; font-size: 18px; margin-left: 12px; transition: color 0.3s; }
+.login-form .input-group:focus-within i { color: #2d6a4f; }
+.login-form .input-group input {
+    width: 100%;
+    padding: 14px 0;
+    border: none;
+    background: transparent;
+    font-size: 16px;
+    color: #333;
+    outline: none;
+}
+.login-form .input-group input::placeholder { color: #aaa; }
+
+#login-btn {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #1a472a, #2d6a4f);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 5px;
+}
+#login-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(45, 106, 79, 0.4); }
+#login-btn:active { transform: translateY(0); }
+
+#login-error { text-align: center; font-size: 13px; color: #e76f51; margin-top: 10px; display: none; }
+.login-footer { text-align: center; margin-top: 20px; color: #aaa; font-size: 12px; }
+
+/* ========================================== */
+/* التطبيق الأساسي */
+/* ========================================== */
+header {
+    background: linear-gradient(135deg, #1a472a, #2d6a4f);
+    color: white;
+    padding: 6px 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1000;
+    position: relative;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+header h1 { font-size: 14px; display: flex; align-items: center; gap: 6px; }
+header h1 i { color: #95d5b2; }
+.header-actions { display: flex; flex-wrap: wrap; gap: 3px; }
+.header-actions button {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: 3px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 10px;
+    transition: all 0.3s;
+    white-space: nowrap;
+}
+.header-actions button:hover { background: rgba(255, 255, 255, 0.25); }
+
+#map { height: calc(100vh - 110px); width: 100%; position: relative; }
+
+#chart-container {
+    position: absolute;
+    bottom: 70px;
+    left: 8px;
+    background: white;
+    padding: 8px 10px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    width: 180px;
+    z-index: 500;
+}
+#chart-container h4 { font-size: 10px; margin-bottom: 4px; }
+#chart-container canvas { width: 100% !important; height: auto !important; }
+
+#info-panel {
+    position: absolute;
+    bottom: 70px;
+    right: 8px;
+    background: white;
+    padding: 10px 12px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    width: 200px;
+    max-height: 220px;
+    overflow-y: auto;
+    z-index: 500;
+    font-size: 11px;
+    transition: all 0.3s;
+}
+#info-panel h3 { color: #1a472a; font-size: 12px; margin-bottom: 6px; border-bottom: 2px solid #95d5b2; padding-bottom: 4px; }
+#farm-details p { font-size: 11px; line-height: 1.6; color: #333; }
+#farm-details .label { font-weight: bold; color: #1a472a; }
+#farm-details .farm-card {
+    background: #f8fafc;
+    border-radius: 6px;
+    padding: 8px;
+    margin: 4px 0;
+    border-right: 3px solid #2d6a4f;
+}
+#farm-details .farm-card .badge {
+    display: inline-block;
+    background: #2d6a4f;
+    color: white;
+    padding: 1px 6px;
+    border-radius: 8px;
+    font-size: 9px;
+    margin-top: 2px;
+}
+#farm-details .farm-card .badge.warning { background: #e76f51; }
+#farm-details .category-btn {
+    margin: 1px;
+    padding: 1px 5px;
+    border-radius: 3px;
+    border: 1px solid #2d6a4f;
+    background: white;
+    color: #2d6a4f;
+    cursor: pointer;
+    font-size: 9px;
+    transition: all 0.2s;
+}
+#farm-details .category-btn:hover { background: #2d6a4f; color: white; }
+#farm-details .category-btn.active { background: #2d6a4f; color: white; }
+
+#stats-bar {
+    position: absolute;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 6px 14px;
+    border-radius: 8px;
+    display: flex;
+    gap: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    z-index: 500;
+}
+.stat-item { text-align: center; }
+.stat-number { display: block; font-size: 16px; font-weight: bold; color: #1a472a; }
+.stat-label { font-size: 9px; color: #666; }
+
+.leaflet-popup-content { font-size: 11px; direction: rtl; }
+.farm-marker {
+    background: #2d6a4f;
+    border: 2px solid #1a472a;
+    border-radius: 50%;
+    width: 24px !important;
+    height: 24px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 10px;
+    font-weight: bold;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+
+/* نافذة إضافة مزرعة */
+#farm-form-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+}
+#farm-form-modal form input { font-family: inherit; }
+#farm-form-modal form input:focus {
+    outline: none;
+    border-color: #2d6a4f;
+    box-shadow: 0 0 0 3px rgba(45, 106, 79, 0.1);
+}
+
+/* تحسين العرض على الموبايل */
+@media (max-width: 768px) {
+    header h1 { font-size: 12px; }
+    .header-actions button { font-size: 8px; padding: 2px 5px; }
+    #stats-bar { gap: 10px; padding: 4px 8px; }
+    .stat-number { font-size: 14px; }
+    #info-panel { width: 160px; right: 5px; bottom: 80px; max-height: 180px; font-size: 10px; }
+    #chart-container { width: 140px; left: 5px; bottom: 80px; }
+    #chart-container h4 { font-size: 9px; }
+    #farm-details p { font-size: 10px; }
+    #info-panel h3 { font-size: 11px; }
+    .farm-marker { width: 20px !important; height: 20px !important; font-size: 9px; }
+    .login-box { padding: 30px 20px; }
+    .login-header h1 { font-size: 20px; }
+    .login-icon { font-size: 36px; padding: 12px; }
+}
+
+@media (max-width: 480px) {
+    header h1 { font-size: 10px; }
+    .header-actions button { font-size: 7px; padding: 1px 4px; }
+    #stats-bar { gap: 6px; padding: 3px 6px; }
+    .stat-number { font-size: 12px; }
+    #info-panel { width: 130px; right: 4px; bottom: 75px; max-height: 150px; font-size: 9px; padding: 6px 8px; }
+    #chart-container { width: 110px; left: 4px; bottom: 75px; padding: 4px 6px; }
+    #chart-container h4 { font-size: 8px; }
+    #farm-details p { font-size: 9px; line-height: 1.4; }
+    #info-panel h3 { font-size: 10px; }
+    .farm-marker { width: 18px !important; height: 18px !important; font-size: 8px; }
+    .login-box { padding: 20px 15px; }
+    .login-header h1 { font-size: 18px; }
+    .login-icon { font-size: 30px; padding: 10px; }
+    .login-form .input-group input { font-size: 14px; padding: 10px 0; }
+    #login-btn { font-size: 16px; padding: 12px; }
+    #farm-form-modal div { padding: 20px; }
+}
